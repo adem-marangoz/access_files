@@ -1,0 +1,19 @@
+# Local configuration and secrets (never commit the bot token)
+config.yaml
+.env
+
+# Logs
+logs/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# PyInstaller
+build/
+dist/

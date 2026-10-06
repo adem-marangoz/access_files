@@ -1,0 +1,73 @@
+# PC File Monitoring and Telegram Notification System — configuration
+#
+# Copy this file to config.yaml and adapt it. Values like ${NAME} are read
+# from environment variables or from a .env file next to this file, so the
+# bot token never has to be written here (see .env.example).
+
+telegram:
+  bot_token: "${TELEGRAM_BOT_TOKEN}"
+  chat_id: "${TELEGRAM_CHAT_ID}"
+  # api_base_url: "https://api.telegram.org"   # or a self-hosted Bot API server
+  # timeout_seconds: 30
+
+# Two-way commands: /status /projects /diff /build /log /stop /start /help
+# Only chats in the allowlist are served: telegram.chat_id plus the IDs below.
+commands:
+  enabled: true
+  authorized_chat_ids: []
+
+notifications:
+  # 1 = Basic: names of changed files
+  # 2 = Git summary: branch, changed files, +/- lines        (default)
+  # 3 = Full change: summary + inline diff preview + .patch / files attached
+  # 4 = AI development monitor: "AI task started" -> files modified ->
+  #     build started -> build result -> diff -> "AI TASK COMPLETED"
+  level: 4
+
+  # SECURITY: diffs and files contain source code that leaves this PC and is
+  # stored by Telegram. Only enable them if your project/company policy allows it.
+  send_diff: true            # .patch attachment, inline preview and /diff
+  send_files: true           # attach the modified files themselves
+  send_build_result: true    # build/test status (+ log on failure)
+
+  inline_diff_max_lines: 20  # 0 disables the inline preview
+  max_file_size_kb: 1024     # larger files/patches are skipped/truncated
+  max_files: 10              # attached files per notification
+  max_listed_files: 25       # file names listed per message
+  notify_on_startup: true    # "PC Agent started/stopped" messages
+  silent_intermediate: true  # level 4: intermediate messages without sound
+
+watch:
+  debounce_seconds: 5        # quiet period that ends a group of changes
+  max_batch_seconds: 60      # notify at the latest after this, even if busy
+  task_idle_seconds: 120     # level 4: no changes this long = AI task completed
+  # Extra ignore patterns for all projects (gitignore-like):
+  #   "name/" = folder at any depth, "*.o" = file name, "Debug/*.map" = path
+  ignore: []
+  use_default_ignores: true  # .git/, __pycache__/, node_modules/, *.swp, *.tmp, ...
+
+logging:
+  level: INFO
+  file: "logs/agent.log"     # relative to this file; used by /log
+
+projects:
+
+  - name: TPMS ECU
+    path: "C:\\Projects\\tpms_ecu"
+    git: true                # true, false or auto (detect)
+    ignore: ["Debug/", "Release/"]
+    # Optional build/test. run_on: manual (only /build), change (after each
+    # group of changes) or task_complete (when the AI task goes idle).
+    # build:
+    #   command: "make -C Debug all"
+    #   test_command: "ctest --test-dir build"
+    #   run_on: task_complete
+    #   timeout_seconds: 600
+
+  - name: ESP Diagnostic Tool
+    path: "C:\\Projects\\tpms_tool_esp"
+    git: true
+
+  - name: Diagnostic Tool
+    path: "C:\\Projects\\diagnostic_tool"
+    git: true

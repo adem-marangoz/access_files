@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tpms-agent"
+version = "1.0.0"
+description = "Monitor project folders and send change notifications (Git summary, diffs, build results) to Telegram."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "watchdog>=4.0",
+    "PyYAML>=6.0",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pyinstaller>=6.0"]
+
+[project.scripts]
+tpms-agent = "tpms_agent.agent:main"
+
+[tool.setuptools]
+packages = ["tpms_agent"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
